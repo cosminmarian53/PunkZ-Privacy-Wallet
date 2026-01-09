@@ -5,3 +5,4 @@ export { AboutScreen } from './AboutScreen';
 export { SecurityScreen } from './SecurityScreen';
 export { NetworkScreen } from './NetworkScreen';
 export { PrivacyScreen } from './PrivacyScreen';
+export { StealthScreen } from './StealthScreen';

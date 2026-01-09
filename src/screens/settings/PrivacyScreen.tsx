@@ -10,7 +10,8 @@ import {
   CheckCircle, 
   Copy,
   Info,
-  Zap
+  Zap,
+  ChevronRight
 } from 'lucide-react';
 import { useWalletStore } from '../../store/walletStore';
 import { formatCommitment } from '../../lib/zk';
@@ -227,7 +228,7 @@ export const PrivacyScreen: React.FC = () => {
         </div>
 
         {/* How It Works */}
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-4">
+        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 mb-6">
           <div className="flex items-center gap-2 mb-3">
             <Info className="w-4 h-4 text-cyan-400" />
             <h3 className="text-white font-medium">How It Works</h3>
@@ -248,6 +249,23 @@ export const PrivacyScreen: React.FC = () => {
             </p>
           </div>
         </div>
+
+        {/* Stealth Addresses Link */}
+        <button
+          onClick={() => navigate('/settings/stealth')}
+          className="w-full bg-gradient-to-r from-purple-900/30 to-fuchsia-900/30 border border-purple-500/30 rounded-2xl p-4 flex items-center justify-between hover:from-purple-900/40 hover:to-fuchsia-900/40 transition-all group"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
+              <Eye className="w-5 h-5 text-purple-400" />
+            </div>
+            <div className="text-left">
+              <p className="text-white font-medium">Stealth Addresses</p>
+              <p className="text-slate-500 text-sm">Receive payments privately</p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-purple-400 transition-colors" />
+        </button>
       </div>
     </div>
   );

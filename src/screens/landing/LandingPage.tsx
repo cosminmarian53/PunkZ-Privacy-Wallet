@@ -296,22 +296,22 @@ export const LandingPage = () => {
                 </div>
                 
                 <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Eye className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold mb-1">Stealth Addresses</h4>
+                    <p className="text-slate-500 text-sm">Generate one-time receiving addresses that can't be linked to your public identity</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-fuchsia-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Shield className="w-5 h-5 text-fuchsia-400" />
                   </div>
                   <div>
                     <h4 className="text-white font-semibold mb-1">Verifiable Privacy</h4>
                     <p className="text-slate-500 text-sm">Others can verify your proofs without learning anything about your balance</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-5 h-5 text-purple-400" />
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold mb-1">Instant Proofs</h4>
-                    <p className="text-slate-500 text-sm">Generate ZK proofs in milliseconds, right in your browser</p>
                   </div>
                 </div>
               </div>

@@ -28,3 +28,21 @@ export {
   type EqualityProof,
   type PrivacyState,
 } from './commitments';
+
+// Stealth Addresses
+export {
+  // Functions
+  generateStealthKeys,
+  parseStealthMetaAddress,
+  generateStealthAddress,
+  scanForStealthPayments,
+  deriveStealthSpendingKey,
+  formatMetaAddress,
+  isValidStealthMetaAddress,
+  
+  // Types
+  type StealthMetaAddress,
+  type StealthAddress,
+  type StealthPayment,
+  type StealthKeys,
+} from './stealth';
