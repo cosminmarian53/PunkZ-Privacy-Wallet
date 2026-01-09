@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useWalletStore } from './store/walletStore';
 
+// Landing page
+import { LandingPage } from './screens/landing/LandingPage';
+
 // Onboarding screens
 import { OnboardingScreen, BackupScreen, RestoreScreen, RestoreSuccessScreen } from './screens/onboarding';
 
@@ -26,7 +29,7 @@ const RequireWallet: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const { publicKey } = useWalletStore();
   
   if (!publicKey) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/onboarding" replace />;
   }
   
   return <>{children}</>;
@@ -46,10 +49,13 @@ const RedirectIfWallet: React.FC<{ children: React.ReactNode }> = ({ children })
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen max-w-lg mx-auto bg-gradient-to-b from-zinc-900 via-zinc-950 to-black">
+      <div className="min-h-screen w-full bg-[#0d0221]">
         <Routes>
+          {/* Landing page - always accessible */}
+          <Route path="/" element={<LandingPage />} />
+
           {/* Onboarding routes */}
-          <Route path="/" element={
+          <Route path="/onboarding" element={
             <RedirectIfWallet>
               <OnboardingScreen />
             </RedirectIfWallet>

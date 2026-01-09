@@ -1,12 +1,17 @@
+/* Import retro fonts - must be first */
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Monoton&family=Permanent+Marker&family=Righteous&family=VT323&family=Russo+One&display=swap');
+
+
 :root {
-  --color-primary: #7C3AED;
-  --color-primary-dark: #6D28D9;
-  --color-secondary: #10B981;
-  --color-bg-primary: #0F0F0F;
-  --color-bg-secondary: #1A1A1A;
-  --color-bg-tertiary: #252525;
+  --neon-pink: #ff00ff;
+  --neon-purple: #7c3aed;
+  --neon-cyan: #00f0ff;
+  --neon-blue: #00c2ff;
+  --color-bg-primary: #0d0221;
+  --color-bg-secondary: #130021;
+  --color-bg-tertiary: #1a0033;
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #A1A1AA;
   --color-text-tertiary: #71717A;
@@ -28,32 +33,75 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(180deg, #0F0F0F 0%, #1A1A1A 50%, #0F0F0F 100%);
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(180deg, #0d0221 0%, #130021 50%, #0d0221 100%);
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Neon glow effects */
+.neon-text {
+  color: #fff;
+  text-shadow: 0 0 5px #fff, 
+    0 0 10px #fff, 
+    0 0 15px var(--neon-pink), 
+    0 0 20px var(--neon-pink), 
+    0 0 25px var(--neon-pink);
+}
+
+.neon-text-cyan {
+  color: #fff;
+  text-shadow: 0 0 5px #fff, 
+    0 0 10px #fff, 
+    0 0 15px var(--neon-cyan), 
+    0 0 20px var(--neon-cyan), 
+    0 0 25px var(--neon-cyan);
+}
+
+.neon-border {
+  border: 1px solid var(--neon-pink);
+  box-shadow: 0 0 10px var(--neon-pink), inset 0 0 10px rgba(255, 0, 255, 0.1);
+}
+
+.neon-border-cyan {
+  border: 1px solid var(--neon-cyan);
+  box-shadow: 0 0 10px var(--neon-cyan), inset 0 0 10px rgba(0, 240, 255, 0.1);
+}
+
+.neon-glow {
+  box-shadow: 0 0 20px var(--neon-pink), 0 0 40px rgba(255, 0, 255, 0.3);
+}
+
+.neon-glow-cyan {
+  box-shadow: 0 0 20px var(--neon-cyan), 0 0 40px rgba(0, 240, 255, 0.3);
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
+  background: #0d0221;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
+  background: linear-gradient(to bottom, var(--neon-purple), var(--neon-pink));
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
+  background: linear-gradient(to bottom, var(--neon-pink), var(--neon-cyan));
 }
 
-/* Animations */
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--neon-purple) #0d0221;
+}
+
+/* Keyframe Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -75,6 +123,42 @@ body {
   50% { opacity: 0.5; }
 }
 
+@keyframes flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    opacity: 1;
+  }
+  20%, 24%, 55% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes neonPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink), 0 0 60px var(--neon-pink);
+  }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out;
 }
@@ -87,9 +171,95 @@ body {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+.animate-flicker {
+  animation: flicker 3s infinite alternate;
+}
+
+.animate-neon-pulse {
+  animation: neonPulse 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glitch {
+  animation: glitch 0.3s infinite;
+}
+
 /* Glass effect */
 .glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(13, 2, 33, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 0, 255, 0.2);
 }
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(13, 2, 33, 0.9) 0%, rgba(26, 0, 51, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 0, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.1);
+}
+
+/* Button styles */
+.retro-button {
+  font-family: 'VT323', monospace;
+  background: linear-gradient(45deg, var(--neon-pink), var(--neon-cyan));
+  border: none;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.5), 0 0 15px rgba(0, 240, 255, 0.5);
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: white;
+  font-weight: bold;
+}
+
+.retro-button:hover {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 0 25px rgba(255, 0, 255, 0.8), 0 0 25px rgba(0, 240, 255, 0.8);
+}
+
+.retro-button:active {
+  transform: scale(0.98);
+}
+
+/* Input styles */
+.retro-input {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--neon-pink);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: white;
+  font-family: 'VT323', monospace;
+  transition: all 0.3s ease;
+}
+
+.retro-input:focus {
+  outline: none;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+  border-color: var(--neon-cyan);
+}
+
+.retro-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Grid background */
+.grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(255, 0, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 0, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(45deg, var(--neon-pink), var(--neon-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
