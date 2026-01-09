@@ -78,27 +78,34 @@ export const LandingPage = () => {
             <span className="text-cyan-400 text-sm font-medium">Built on Solana Blockchain</span>
           </div>
 
-          {/* Logo Icon */}
-          <div className="mb-8 float">
-            <div className="inline-flex items-center justify-center w-28 h-28 rounded-3xl bg-gradient-to-br from-fuchsia-500 to-cyan-400 pulse-glow">
-              <Wallet className="w-14 h-14 text-white" />
+          {/* Mascot + Title Container */}
+          <div className="relative mb-8">
+            {/* Mascot Image - Behind */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[500px] md:h-[500px] opacity-30 pointer-events-none">
+              <img 
+                src="/mask.png" 
+                alt="PunkZ Mascot" 
+                className="w-full h-full object-contain drop-shadow-[0_0_60px_rgba(236,72,153,0.5)]"
+              />
+            </div>
+            
+            {/* Title - In Front */}
+            <div className="relative z-10 py-16">
+              <h1 
+                className="text-7xl md:text-9xl font-bold mb-4 text-fuchsia-500 neon-text-pink flicker"
+                style={{ fontFamily: 'Monoton, cursive' }}
+              >
+                PUNKZ
+              </h1>
+              
+              <p 
+                className="text-3xl md:text-4xl text-cyan-400 mb-6 tracking-[0.3em] neon-text-cyan"
+                style={{ fontFamily: 'Orbitron, sans-serif' }}
+              >
+                WALLET
+              </p>
             </div>
           </div>
-
-          {/* Title */}
-          <h1 
-            className="text-7xl md:text-9xl font-bold mb-4 text-fuchsia-500 neon-text-pink flicker"
-            style={{ fontFamily: 'Monoton, cursive' }}
-          >
-            PUNKZ
-          </h1>
-          
-          <p 
-            className="text-3xl md:text-4xl text-cyan-400 mb-6 tracking-[0.3em] neon-text-cyan"
-            style={{ fontFamily: 'Orbitron, sans-serif' }}
-          >
-            WALLET
-          </p>
 
           {/* Tagline with Gradient */}
           <p className="text-2xl md:text-4xl gradient-text font-bold mb-6">
