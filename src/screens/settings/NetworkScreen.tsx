@@ -33,13 +33,12 @@ const networks = [
 
 export const NetworkScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { network, setNetwork, refreshBalance } = useWalletStore();
+  const { network, setNetwork, isSyncing } = useWalletStore();
 
-  const handleNetworkChange = async (newNetwork: 'mainnet-beta' | 'devnet' | 'testnet') => {
+  const handleNetworkChange = (newNetwork: 'mainnet-beta' | 'devnet' | 'testnet') => {
     if (newNetwork !== network) {
+      // setNetwork already calls refreshBalance internally
       setNetwork(newNetwork);
-      // Refresh balance on network change
-      await refreshBalance();
     }
   };
 

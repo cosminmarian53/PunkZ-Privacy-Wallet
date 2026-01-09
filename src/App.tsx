@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useWalletStore } from './store/walletStore';
+import { WalletConnectRequestModal } from './components/walletconnect/WalletConnectRequestModal';
 
 // Landing page
 import { LandingPage } from './screens/landing/LandingPage';
@@ -227,6 +228,8 @@ const AppLayout: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Global WalletConnect request modal - appears on any screen */}
+      <WalletConnectRequestModal />
     </div>
   );
 };

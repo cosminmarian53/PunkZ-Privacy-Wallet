@@ -114,7 +114,8 @@ class WalletConnectManager {
 
   async approveSession(
     proposal: SignClientTypes.EventArguments['session_proposal'],
-    publicKey: string
+    publicKey: string,
+    network: 'mainnet-beta' | 'devnet' | 'testnet' = 'devnet'
   ): Promise<SessionTypes.Struct> {
     if (!this.client) {
       throw new Error('WalletConnect not initialized');
@@ -123,16 +124,39 @@ class WalletConnectManager {
     const { id, params } = proposal;
     const { requiredNamespaces, optionalNamespaces } = params;
 
+    // Map network to Solana chain ID
+    // Mainnet: solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp (genesis hash)
+    // Devnet: solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1 (devnet genesis hash)
+    // Actually, many dApps use mainnet genesis hash for all - we support both
+    const SOLANA_CHAINS = {
+      'mainnet-beta': 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
+      'devnet': 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+      'testnet': 'solana:4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z'
+    };
+
+    // Support both the current network and mainnet (some dApps require mainnet chain)
+    const primaryChain = SOLANA_CHAINS[network];
+    const mainnetChain = SOLANA_CHAINS['mainnet-beta'];
+    
+    // Include all chains that might be requested
+    const chains = [primaryChain];
+    if (primaryChain !== mainnetChain) {
+      chains.push(mainnetChain);
+    }
+    
+    // Build accounts for all supported chains
+    const accounts = chains.map(chain => `${chain}:${publicKey}`);
+
     // Build the namespace for Solana
     const solanaNamespace = {
-      chains: ['solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'], // Solana Devnet
+      chains,
       methods: [
         'solana_signTransaction',
         'solana_signMessage',
         'solana_signAndSendTransaction',
       ],
       events: ['accountsChanged', 'chainChanged'],
-      accounts: [`solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp:${publicKey}`],
+      accounts,
     };
 
     const namespaces: SessionTypes.Namespaces = {

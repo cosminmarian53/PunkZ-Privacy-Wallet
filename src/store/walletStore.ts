@@ -389,7 +389,14 @@ export const useWalletStore = create<WalletState>()(
       },
 
       setNetwork: (network) => {
-        set({ network });
+        // Clear balance and transactions immediately when switching networks
+        set({ 
+          network, 
+          balance: 0, 
+          transactions: [],
+          isSyncing: true 
+        });
+        // Then refresh with new network
         get().refreshBalance();
       },
 

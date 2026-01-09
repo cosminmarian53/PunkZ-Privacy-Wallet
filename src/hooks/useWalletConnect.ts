@@ -5,6 +5,7 @@ import {
   type PendingRequest 
 } from '../lib/walletconnect';
 import { SignClientTypes } from '@walletconnect/types';
+import { useWalletStore } from '../store/walletStore';
 
 export interface UseWalletConnectReturn {
   isInitialized: boolean;
@@ -31,6 +32,9 @@ export const useWalletConnect = (): UseWalletConnectReturn => {
   const [pendingProposal, setPendingProposal] = useState<SignClientTypes.EventArguments['session_proposal'] | null>(null);
   const [pendingRequest, setPendingRequest] = useState<SignClientTypes.EventArguments['session_request'] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // Get current network from wallet store
+  const network = useWalletStore(state => state.network);
 
   // Initialize WalletConnect
   const initialize = useCallback(async () => {
@@ -75,7 +79,7 @@ export const useWalletConnect = (): UseWalletConnectReturn => {
     if (!pendingProposal) return;
     
     try {
-      await walletConnectManager.approveSession(pendingProposal, publicKey);
+      await walletConnectManager.approveSession(pendingProposal, publicKey, network);
       // Small delay to ensure session is fully registered
       await new Promise(resolve => setTimeout(resolve, 100));
       setSessions(walletConnectManager.getSessions());
@@ -86,7 +90,7 @@ export const useWalletConnect = (): UseWalletConnectReturn => {
       // Always clear the proposal, even on error
       setPendingProposal(null);
     }
-  }, [pendingProposal]);
+  }, [pendingProposal, network]);
 
   // Reject pending session proposal
   const rejectSession = useCallback(async () => {
