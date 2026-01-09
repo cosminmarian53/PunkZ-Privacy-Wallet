@@ -11,6 +11,13 @@ import {
 } from '@solana/web3.js';
 import * as bip39 from 'bip39';
 import bs58 from 'bs58';
+import { 
+  createBalanceCommitment, 
+  verifyCommitment,
+  type PedersenCommitment,
+  type PrivacyState,
+  initializePrivacyState 
+} from '../lib/zk';
 
 // Browser-compatible ED25519 HD key derivation using Web Crypto API
 const HARDENED_OFFSET = 0x80000000;
@@ -108,6 +115,10 @@ export interface WalletState {
   network: 'mainnet-beta' | 'devnet' | 'testnet';
   hideBalances: boolean;
   
+  // ZK Privacy State
+  privacy: PrivacyState;
+  balanceCommitment: PedersenCommitment | null;
+  
   // Actions
   createWallet: () => Promise<string>;
   importWallet: (mnemonic: string) => Promise<boolean>;
@@ -119,6 +130,11 @@ export interface WalletState {
   setNetwork: (network: 'mainnet-beta' | 'devnet' | 'testnet') => void;
   toggleHideBalances: () => void;
   getKeypair: () => Keypair | null;
+  
+  // ZK Actions
+  generateBalanceCommitment: () => PedersenCommitment | null;
+  verifyBalanceCommitment: (commitment: string, balance: number, blindingFactor: string) => boolean;
+  togglePrivacyMode: () => void;
 }
 
 const RPC_ENDPOINTS = {
@@ -142,6 +158,10 @@ export const useWalletStore = create<WalletState>()(
       contacts: [],
       network: 'devnet',
       hideBalances: false,
+      
+      // ZK Privacy State
+      privacy: initializePrivacyState(),
+      balanceCommitment: null,
 
       createWallet: async () => {
         set({ isLoading: true, error: null });
@@ -340,6 +360,38 @@ export const useWalletStore = create<WalletState>()(
         if (!privateKey) return null;
         return Keypair.fromSecretKey(bs58.decode(privateKey));
       },
+      
+      // ZK Privacy Actions
+      generateBalanceCommitment: () => {
+        const { balance } = get();
+        const balanceLamports = Math.floor(balance * LAMPORTS_PER_SOL);
+        const commitment = createBalanceCommitment(balanceLamports);
+        
+        set({ 
+          balanceCommitment: commitment,
+          privacy: {
+            ...get().privacy,
+            balanceCommitment: commitment,
+            lastProofGenerated: Date.now(),
+          }
+        });
+        
+        return commitment;
+      },
+      
+      verifyBalanceCommitment: (commitment: string, balance: number, blindingFactor: string) => {
+        const balanceLamports = Math.floor(balance * LAMPORTS_PER_SOL);
+        return verifyCommitment(commitment, balanceLamports, blindingFactor);
+      },
+      
+      togglePrivacyMode: () => {
+        set((state) => ({
+          privacy: {
+            ...state.privacy,
+            hideBalanceEnabled: !state.privacy.hideBalanceEnabled,
+          }
+        }));
+      },
     }),
     {
       name: 'punkz-wallet-storage',
@@ -351,6 +403,8 @@ export const useWalletStore = create<WalletState>()(
         network: state.network,
         hideBalances: state.hideBalances,
         transactions: state.transactions,
+        privacy: state.privacy,
+        balanceCommitment: state.balanceCommitment,
       }),
     }
   )

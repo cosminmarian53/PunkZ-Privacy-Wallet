@@ -184,14 +184,17 @@ export const LandingPage = () => {
           {/* Feature Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="p-8 bg-slate-900/50 rounded-2xl neon-card group">
-              <div className="w-14 h-14 bg-gradient-to-br from-fuchsia-500/20 to-fuchsia-500/5 rounded-xl flex items-center justify-center mb-6 group-hover:neon-box-pink transition-all">
-                <Shield className="w-7 h-7 text-fuchsia-400" />
+            <div className="p-8 bg-gradient-to-br from-slate-900/50 to-cyan-900/20 rounded-2xl border border-cyan-500/20 neon-card group">
+              <div className="w-14 h-14 bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 rounded-xl flex items-center justify-center mb-6 group-hover:neon-box-cyan transition-all">
+                <Shield className="w-7 h-7 text-cyan-400" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">Privacy First</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <h3 className="text-2xl font-bold text-white">Zero-Knowledge Privacy</h3>
+                <span className="text-xs px-2 py-0.5 bg-cyan-500/20 text-cyan-400 rounded-full">ZK</span>
+              </div>
               <p className="text-slate-400 leading-relaxed">
-                Your transactions are your business. No tracking, no analytics, no compromises. 
-                Complete control over every transfer you make.
+                Pedersen commitments let you prove properties about your balance without revealing 
+                the actual amount. Cryptographic privacy built right in.
               </p>
             </div>
 
@@ -253,6 +256,90 @@ export const LandingPage = () => {
                 Fully auditable, community-driven development. Verify the code yourself. 
                 Trust through transparency.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ZK Privacy Section */}
+      <section className="py-32 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-950/20 via-purple-950/20 to-fuchsia-950/20 pointer-events-none" />
+        
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Left - Content */}
+            <div>
+              <span className="inline-block px-5 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-full text-cyan-400 text-sm font-medium tracking-wider mb-6">
+                🔐 ZERO-KNOWLEDGE CRYPTOGRAPHY
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Prove Without<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-400">
+                  Revealing
+                </span>
+              </h2>
+              <p className="text-xl text-slate-400 mb-8 leading-relaxed">
+                PunkZ uses Pedersen commitments — the same cryptographic primitive used in 
+                privacy coins like Zcash. Prove you have sufficient balance for a trade 
+                without revealing your actual holdings.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Lock className="w-5 h-5 text-cyan-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold mb-1">Balance Commitments</h4>
+                    <p className="text-slate-500 text-sm">Generate cryptographic proofs of your balance that can be shared without revealing the amount</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-fuchsia-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Shield className="w-5 h-5 text-fuchsia-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold mb-1">Verifiable Privacy</h4>
+                    <p className="text-slate-500 text-sm">Others can verify your proofs without learning anything about your balance</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold mb-1">Instant Proofs</h4>
+                    <p className="text-slate-500 text-sm">Generate ZK proofs in milliseconds, right in your browser</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right - Code Visual */}
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500/20 to-fuchsia-500/20 rounded-3xl blur-xl opacity-50" />
+              <div className="relative bg-slate-900/90 border border-slate-700 rounded-2xl p-6 font-mono text-sm overflow-hidden">
+                <div className="flex items-center gap-2 mb-4 pb-4 border-b border-slate-700">
+                  <div className="w-3 h-3 rounded-full bg-rose-500" />
+                  <div className="w-3 h-3 rounded-full bg-amber-500" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                  <span className="text-slate-500 text-xs ml-2">commitments.ts</span>
+                </div>
+                
+                <div className="space-y-2 text-xs md:text-sm">
+                  <p><span className="text-fuchsia-400">const</span> <span className="text-cyan-400">balance</span> = <span className="text-amber-400">1.5</span> <span className="text-slate-500">// SOL</span></p>
+                  <p><span className="text-fuchsia-400">const</span> <span className="text-cyan-400">r</span> = <span className="text-emerald-400">generateBlindingFactor</span>()</p>
+                  <p className="text-slate-500">// Pedersen commitment: C = G^v × H^r</p>
+                  <p><span className="text-fuchsia-400">const</span> <span className="text-cyan-400">C</span> = <span className="text-emerald-400">commit</span>(<span className="text-cyan-400">balance</span>, <span className="text-cyan-400">r</span>)</p>
+                  <p className="mt-4 text-slate-500">// Output: commitment hash</p>
+                  <p className="text-emerald-400 break-all">"a3f8b2c1e9d7f6a2..."</p>
+                  <p className="mt-4 text-slate-500">// Share C publicly</p>
+                  <p className="text-slate-500">// Nobody knows balance = 1.5 SOL</p>
+                  <p className="text-slate-500">// But you can PROVE it anytime!</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

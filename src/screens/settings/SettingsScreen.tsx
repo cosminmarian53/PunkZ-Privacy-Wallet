@@ -1,3 +1,4 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWalletStore } from '../../store/walletStore';
 import { TopAppBar } from '../../components/navigation/TopAppBar';
@@ -10,12 +11,14 @@ import {
   HelpCircle, 
   LogOut,
   ChevronRight,
-  Wallet
+  Wallet,
+  Lock
 } from 'lucide-react';
 
-const settingsItems = [
+const settingsItems: Array<{ icon: React.ElementType; label: string; path: string; highlight?: boolean }> = [
   { icon: User, label: 'Profile', path: '/settings/profile' },
   { icon: Shield, label: 'Security', path: '/settings/security' },
+  { icon: Lock, label: 'ZK Privacy', path: '/settings/privacy', highlight: true },
   { icon: Bell, label: 'Notifications', path: '/settings/notifications' },
   { icon: Globe, label: 'Network', path: '/settings/network' },
   { icon: HelpCircle, label: 'Help & Support', path: '/settings/help' },
@@ -62,11 +65,14 @@ export const SettingsScreen = () => {
               onClick={() => navigate(item.path)}
               className={`w-full flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors ${
                 index !== settingsItems.length - 1 ? 'border-b border-slate-800' : ''
-              }`}
+              } ${item.highlight ? 'bg-gradient-to-r from-fuchsia-900/20 to-cyan-900/20' : ''}`}
             >
               <div className="flex items-center gap-3">
-                <item.icon className="w-5 h-5 text-fuchsia-400" />
+                <item.icon className={`w-5 h-5 ${item.highlight ? 'text-cyan-400' : 'text-fuchsia-400'}`} />
                 <span className="text-white">{item.label}</span>
+                {item.highlight && (
+                  <span className="text-xs px-2 py-0.5 bg-cyan-500/20 text-cyan-400 rounded-full">NEW</span>
+                )}
               </div>
               <ChevronRight className="w-5 h-5 text-slate-500" />
             </button>

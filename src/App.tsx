@@ -21,7 +21,9 @@ import {
   BackupSettingsScreen, 
   AddressBookScreen, 
   AboutScreen, 
-  SecurityScreen 
+  SecurityScreen,
+  NetworkScreen,
+  PrivacyScreen 
 } from './screens/settings';
 
 // Auth guard component
@@ -171,6 +173,22 @@ const AppLayout: React.FC = () => {
         element={
           <RequireWallet>
             <AboutScreen />
+          </RequireWallet>
+        }
+      />
+      <Route
+        path="/settings/network"
+        element={
+          <RequireWallet>
+            <NetworkScreen />
+          </RequireWallet>
+        }
+      />
+      <Route
+        path="/settings/privacy"
+        element={
+          <RequireWallet>
+            <PrivacyScreen />
           </RequireWallet>
         }
       />
