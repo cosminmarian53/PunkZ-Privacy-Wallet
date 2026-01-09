@@ -1,52 +1,53 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
-  helperText?: string;
   leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
+  rightContent?: React.ReactNode;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, helperText, leftIcon, rightIcon, className = '', ...props }, ref) => {
-    return (
-      <div className="w-full">
-        {label && (
-          <label className="block text-sm font-medium text-zinc-300 mb-2">
-            {label}
-          </label>
+export const Input: React.FC<InputProps> = ({
+  label,
+  error,
+  leftIcon,
+  rightContent,
+  className = '',
+  ...props
+}) => {
+  return (
+    <div className="w-full">
+      {label && (
+        <label className="block text-slate-400 text-sm mb-2">{label}</label>
+      )}
+      <div className="relative">
+        {leftIcon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+            {leftIcon}
+          </div>
         )}
-        <div className="relative">
-          {leftIcon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-500">
-              {leftIcon}
-            </div>
-          )}
-          <input
-            ref={ref}
-            className={`
-              w-full bg-zinc-900 border rounded-xl px-4 py-3 text-white placeholder-zinc-500
-              focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent
-              transition-all duration-200
-              ${leftIcon ? 'pl-10' : ''}
-              ${rightIcon ? 'pr-10' : ''}
-              ${error ? 'border-red-500' : 'border-zinc-700'}
-              ${className}
-            `}
-            {...props}
-          />
-          {rightIcon && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-500">
-              {rightIcon}
-            </div>
-          )}
-        </div>
-        {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
-        {helperText && !error && <p className="mt-2 text-sm text-zinc-500">{helperText}</p>}
+        <input
+          className={`
+            w-full px-4 py-3 bg-slate-900/80 border rounded-xl text-white 
+            placeholder-slate-500 focus:outline-none transition-colors
+            ${leftIcon ? 'pl-10' : ''}
+            ${rightContent ? 'pr-20' : ''}
+            ${error ? 'border-rose-500' : 'border-slate-700 focus:border-fuchsia-500'}
+            ${className}
+          `}
+          {...props}
+        />
+        {rightContent && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            {rightContent}
+          </div>
+        )}
       </div>
-    );
-  }
-);
+      {error && (
+        <p className="mt-1 text-sm text-rose-400">{error}</p>
+      )}
+    </div>
+  );
+};
 
-Input.displayName = 'Input';
+export default Input;

@@ -1,108 +1,126 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWalletStore } from '../../store/walletStore';
-import { Button } from '../../components/ui/Button';
-import { TopAppBar } from '../../components/navigation/TopAppBar';
-import { AlertCircle, FileText } from 'lucide-react';
+import { ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react';
 
 export const RestoreScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { importWallet, isLoading, error } = useWalletStore();
-  const [seedPhrase, setSeedPhrase] = useState('');
-  const [localError, setLocalError] = useState<string | null>(null);
+  const { importWallet } = useWalletStore();
+  
+  const [words, setWords] = useState<string[]>(Array(12).fill(''));
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleRestore = async () => {
-    setLocalError(null);
-    
-    // Validate seed phrase format
-    const words = seedPhrase.trim().toLowerCase().split(/\s+/);
-    if (words.length !== 12 && words.length !== 24) {
-      setLocalError('Please enter a valid 12 or 24 word recovery phrase');
-      return;
-    }
-
-    const success = await importWallet(words.join(' '));
-    if (success) {
-      navigate('/restore-success');
-    }
+  const handleWordChange = (index: number, value: string) => {
+    const newWords = [...words];
+    newWords[index] = value.toLowerCase().trim();
+    setWords(newWords);
+    setError('');
   };
 
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
-      setSeedPhrase(text);
+      const pastedWords = text.trim().split(/\s+/);
+      if (pastedWords.length === 12) {
+        setWords(pastedWords);
+      }
     } catch (err) {
-      console.error('Failed to read clipboard:', err);
+      console.error('Failed to paste:', err);
     }
   };
 
-  const displayError = localError || error;
+  const handleRestore = async () => {
+    const mnemonic = words.join(' ').trim();
+    
+    if (words.some(w => !w)) {
+      setError('Please enter all 12 words');
+      return;
+    }
+
+    setIsRestoring(true);
+    setError('');
+
+    try {
+      await importWallet(mnemonic);
+      navigate('/restore-success');
+    } catch (err) {
+      setError('Invalid recovery phrase. Please check your words and try again.');
+    } finally {
+      setIsRestoring(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-zinc-900 via-zinc-950 to-black">
-      <TopAppBar title="Import Wallet" showBack />
-      
-      <div className="flex-1 flex flex-col px-6 py-4">
-        {/* Instructions */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-white mb-2">
-            Enter your recovery phrase
-          </h2>
-          <p className="text-sm text-zinc-400">
-            Enter your 12 or 24 word recovery phrase to restore your wallet.
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-purple-950/20 to-slate-950 px-6 py-8">
+      <div className="max-w-lg mx-auto">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 text-slate-400 mb-6 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+
+        {/* Header */}
+        <h1 className="text-2xl font-bold text-white mb-2">Import Wallet</h1>
+        <p className="text-slate-400 mb-6">
+          Enter your 12-word recovery phrase to restore your wallet.
+        </p>
+
+        {/* Paste Button */}
+        <button
+          onClick={handlePaste}
+          className="mb-4 px-4 py-2 bg-slate-800 rounded-lg text-slate-300 text-sm hover:bg-slate-700 transition-colors"
+        >
+          Paste from Clipboard
+        </button>
+
+        {/* Word Inputs */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          {words.map((word, index) => (
+            <div key={index} className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">
+                {index + 1}.
+              </span>
+              <input
+                type="text"
+                value={word}
+                onChange={(e) => handleWordChange(index, e.target.value)}
+                className="w-full pl-8 pr-3 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white font-mono text-sm focus:border-fuchsia-500 focus:outline-none"
+                placeholder="..."
+              />
+            </div>
+          ))}
         </div>
 
-        {/* Seed phrase input */}
-        <div className="relative mb-4">
-          <textarea
-            value={seedPhrase}
-            onChange={(e) => {
-              setSeedPhrase(e.target.value);
-              setLocalError(null);
-            }}
-            placeholder="Enter your recovery phrase, separated by spaces"
-            className="w-full h-40 bg-zinc-900 border border-zinc-700 rounded-xl p-4 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent resize-none"
-          />
-          <button
-            onClick={handlePaste}
-            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 text-sm text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 rounded-lg transition-colors"
-          >
-            <FileText className="w-4 h-4" />
-            Paste
-          </button>
-        </div>
-
-        {/* Word count indicator */}
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-sm text-zinc-500">
-            Words: {seedPhrase.trim() ? seedPhrase.trim().split(/\s+/).length : 0}/12 or 24
-          </span>
-        </div>
-
-        {/* Error message */}
-        {displayError && (
-          <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-xl mb-4">
-            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-400">{displayError}</p>
+        {/* Error Message */}
+        {error && (
+          <div className="flex items-center gap-2 p-3 bg-rose-500/10 border border-rose-500/30 rounded-lg mb-6">
+            <AlertCircle className="w-4 h-4 text-rose-400" />
+            <p className="text-rose-400 text-sm">{error}</p>
           </div>
         )}
 
-        {/* Spacer */}
-        <div className="flex-1" />
-
-        {/* Restore button */}
-        <Button
-          variant="primary"
-          size="lg"
-          fullWidth
+        {/* Restore Button */}
+        <button
           onClick={handleRestore}
-          isLoading={isLoading}
-          disabled={!seedPhrase.trim() || isLoading}
+          disabled={isRestoring}
+          className="w-full py-4 bg-gradient-to-r from-fuchsia-500 to-cyan-500 rounded-xl text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          Restore Wallet
-        </Button>
+          {isRestoring ? (
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <>
+              Restore Wallet
+              <ArrowRight className="w-5 h-5" />
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
 };
+
+export default RestoreScreen;

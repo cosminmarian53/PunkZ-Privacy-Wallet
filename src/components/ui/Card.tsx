@@ -3,28 +3,32 @@ import React from 'react';
 interface CardProps {
   children: React.ReactNode;
   className?: string;
-  onClick?: () => void;
-  variant?: 'default' | 'elevated' | 'outlined';
+  padding?: 'none' | 'sm' | 'md' | 'lg';
 }
 
 export const Card: React.FC<CardProps> = ({
   children,
   className = '',
-  onClick,
-  variant = 'default',
+  padding = 'md',
 }) => {
-  const variants = {
-    default: 'bg-zinc-900',
-    elevated: 'bg-zinc-900 shadow-lg',
-    outlined: 'bg-transparent border border-zinc-800',
+  const paddingStyles = {
+    none: '',
+    sm: 'p-3',
+    md: 'p-4',
+    lg: 'p-6',
   };
 
   return (
     <div
-      className={`rounded-2xl ${variants[variant]} ${onClick ? 'cursor-pointer hover:bg-zinc-800 transition-colors' : ''} ${className}`}
-      onClick={onClick}
+      className={`
+        bg-slate-900/50 border border-slate-800 rounded-2xl
+        ${paddingStyles[padding]}
+        ${className}
+      `}
     >
       {children}
     </div>
   );
 };
+
+export default Card;

@@ -6,7 +6,6 @@ interface ModalProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg';
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -14,36 +13,33 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  size = 'md',
 }) => {
   if (!isOpen) return null;
 
-  const sizes = {
-    sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div 
+      className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
       <div 
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <div className={`relative ${sizes[size]} w-full mx-4 bg-zinc-900 rounded-2xl shadow-xl animate-slideUp`}>
+        className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
         {title && (
-          <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-            <h2 className="text-lg font-semibold text-white">{title}</h2>
-            <button
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">{title}</h3>
+            <button 
               onClick={onClose}
-              className="p-1 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-zinc-800"
+              className="p-1 text-slate-400 hover:text-white transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         )}
-        <div className="p-4">{children}</div>
+        {children}
       </div>
     </div>
   );
 };
+
+export default Modal;
