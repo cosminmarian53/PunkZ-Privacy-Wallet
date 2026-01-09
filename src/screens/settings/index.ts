@@ -6,3 +6,4 @@ export { SecurityScreen } from './SecurityScreen';
 export { NetworkScreen } from './NetworkScreen';
 export { PrivacyScreen } from './PrivacyScreen';
 export { StealthScreen } from './StealthScreen';
+export { WalletConnectScreen } from './WalletConnectScreen';

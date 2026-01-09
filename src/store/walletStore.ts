@@ -242,7 +242,7 @@ export const useWalletStore = create<WalletState>()(
           
           const balance = await connection.getBalance(new PublicKey(publicKey));
           
-          set({ syncProgress: 60 });
+          set({ syncProgress: 50 });
           
           // Fetch recent transactions
           const signatures = await connection.getSignaturesForAddress(
@@ -250,17 +250,59 @@ export const useWalletStore = create<WalletState>()(
             { limit: 20 }
           );
           
-          set({ syncProgress: 80 });
+          set({ syncProgress: 70 });
 
-          const transactions: TransactionRecord[] = signatures.map((sig, index) => ({
-            id: sig.signature,
-            type: index % 2 === 0 ? 'receive' : 'send',
-            amount: Math.random() * 0.1,
-            address: 'Unknown',
-            timestamp: (sig.blockTime || Date.now() / 1000) * 1000,
-            status: sig.confirmationStatus === 'finalized' ? 'confirmed' : 'pending',
-            signature: sig.signature,
-          }));
+          // Fetch actual transaction details
+          const transactions: TransactionRecord[] = [];
+          const walletPubKey = new PublicKey(publicKey);
+          
+          for (const sig of signatures) {
+            try {
+              const txDetails = await connection.getParsedTransaction(sig.signature, {
+                maxSupportedTransactionVersion: 0
+              });
+              
+              if (txDetails?.meta) {
+                const preBalances = txDetails.meta.preBalances;
+                const postBalances = txDetails.meta.postBalances;
+                const accountKeys = txDetails.transaction.message.accountKeys;
+                
+                // Find our wallet's index in the account keys
+                const walletIndex = accountKeys.findIndex(
+                  (key) => key.pubkey.toString() === publicKey
+                );
+                
+                if (walletIndex !== -1) {
+                  const preBalance = preBalances[walletIndex];
+                  const postBalance = postBalances[walletIndex];
+                  const balanceChange = (postBalance - preBalance) / LAMPORTS_PER_SOL;
+                  
+                  // Determine transaction type and counterparty
+                  const isReceive = balanceChange > 0;
+                  
+                  // Find the counterparty address
+                  let counterpartyAddress = 'Unknown';
+                  if (accountKeys.length > 1) {
+                    const counterpartyIndex = walletIndex === 0 ? 1 : 0;
+                    counterpartyAddress = accountKeys[counterpartyIndex]?.pubkey.toString() || 'Unknown';
+                  }
+                  
+                  transactions.push({
+                    id: sig.signature,
+                    type: isReceive ? 'receive' : 'send',
+                    amount: Math.abs(balanceChange),
+                    address: counterpartyAddress,
+                    timestamp: (sig.blockTime || Date.now() / 1000) * 1000,
+                    status: sig.confirmationStatus === 'finalized' ? 'confirmed' : 'pending',
+                    signature: sig.signature,
+                  });
+                }
+              }
+            } catch {
+              // Skip transactions that fail to parse
+              continue;
+            }
+          }
 
           set({
             balance: balance / LAMPORTS_PER_SOL,

@@ -12,13 +12,15 @@ import {
   LogOut,
   ChevronRight,
   Wallet,
-  Lock
+  Lock,
+  Link2
 } from 'lucide-react';
 
 const settingsItems: Array<{ icon: React.ElementType; label: string; path: string; highlight?: boolean }> = [
   { icon: User, label: 'Profile', path: '/settings/profile' },
   { icon: Shield, label: 'Security', path: '/settings/security' },
   { icon: Lock, label: 'ZK Privacy', path: '/settings/privacy', highlight: true },
+  { icon: Link2, label: 'WalletConnect', path: '/settings/walletconnect', highlight: true },
   { icon: Bell, label: 'Notifications', path: '/settings/notifications' },
   { icon: Globe, label: 'Network', path: '/settings/network' },
   { icon: HelpCircle, label: 'Help & Support', path: '/settings/help' },
