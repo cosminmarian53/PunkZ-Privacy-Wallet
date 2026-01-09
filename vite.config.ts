@@ -17,6 +17,7 @@ export default defineConfig({
       },
     }),
   ],
+  assetsInclude: ['**/*.glb', '**/*.gltf'],
   define: {
     'process.env': {},
   },

@@ -198,17 +198,26 @@ export const SendScreen: React.FC = () => {
   };
 
   const renderForm = () => (
-    <div className="flex-1 flex flex-col px-4 py-4">
-      {/* Balance */}
-      <div className="mb-6">
+    <div className="flex-1 flex flex-col px-6 py-6 overflow-y-auto">
+      {/* Balance - Compact version */}
+      <motion.div 
+        className="mb-8"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
         <BalanceWidget />
-      </div>
+      </motion.div>
 
       {/* Recipient */}
-      <div className="mb-4">
+      <motion.div 
+        className="mb-6"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.1 }}
+      >
         <label 
-          className="block text-sm font-mono font-medium mb-2"
-          style={{ color: '#00f0ff' }}
+          className="block text-sm font-mono font-medium mb-3"
+          style={{ color: '#00f0ff', textShadow: '0 0 10px rgba(0, 240, 255, 0.3)' }}
         >
           Recipient Address
         </label>
@@ -218,48 +227,53 @@ export const SendScreen: React.FC = () => {
           placeholder="Enter Solana address"
           error={isValidAddress === false ? 'Invalid address' : undefined}
           rightContent={
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <motion.button
                 onClick={() => setShowContacts(true)}
-                className="p-2 rounded-lg transition-colors"
+                className="p-2.5 rounded-lg transition-colors"
                 style={{ color: '#ff00ff' }}
-                whileHover={{ scale: 1.1, filter: 'drop-shadow(0 0 8px #ff00ff)' }}
+                whileHover={{ scale: 1.15, filter: 'drop-shadow(0 0 10px #ff00ff)' }}
                 whileTap={{ scale: 0.9 }}
               >
-                <User className="w-4 h-4" />
+                <User className="w-5 h-5" />
               </motion.button>
               <motion.button
                 onClick={() => navigate('/scan')}
-                className="p-2 rounded-lg transition-colors"
+                className="p-2.5 rounded-lg transition-colors"
                 style={{ color: '#00f0ff' }}
-                whileHover={{ scale: 1.1, filter: 'drop-shadow(0 0 8px #00f0ff)' }}
+                whileHover={{ scale: 1.15, filter: 'drop-shadow(0 0 10px #00f0ff)' }}
                 whileTap={{ scale: 0.9 }}
               >
-                <QrCode className="w-4 h-4" />
+                <QrCode className="w-5 h-5" />
               </motion.button>
             </div>
           }
         />
-      </div>
+      </motion.div>
 
       {/* Amount */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
+      <motion.div 
+        className="mb-6"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <div className="flex items-center justify-between mb-3">
           <label 
             className="text-sm font-mono font-medium"
-            style={{ color: '#00f0ff' }}
+            style={{ color: '#00f0ff', textShadow: '0 0 10px rgba(0, 240, 255, 0.3)' }}
           >
             Amount
           </label>
           <motion.button
             onClick={handleSetMax}
-            className="text-xs font-mono font-bold px-2 py-1 rounded"
+            className="text-sm font-mono font-bold px-3 py-1.5 rounded-lg"
             style={{ 
               color: '#ff00ff',
-              background: 'rgba(255, 0, 255, 0.1)',
-              border: '1px solid rgba(255, 0, 255, 0.3)',
+              background: 'rgba(255, 0, 255, 0.15)',
+              border: '1px solid rgba(255, 0, 255, 0.4)',
             }}
-            whileHover={{ boxShadow: '0 0 15px rgba(255, 0, 255, 0.3)' }}
+            whileHover={{ boxShadow: '0 0 20px rgba(255, 0, 255, 0.4)', scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             MAX
@@ -273,21 +287,31 @@ export const SendScreen: React.FC = () => {
           step="0.000000001"
           error={amount && !isValidAmount ? 'Insufficient balance' : undefined}
           rightContent={
-            <span className="text-sm font-mono pr-2" style={{ color: '#00f0ff' }}>SOL</span>
+            <span className="text-sm font-mono font-bold pr-3" style={{ color: '#00f0ff' }}>SOL</span>
           }
         />
         {amountNumber > 0 && (
-          <p className="text-xs font-mono mt-1" style={{ color: 'rgba(0, 240, 255, 0.6)' }}>
+          <motion.p 
+            className="text-sm font-mono mt-2" 
+            style={{ color: 'rgba(0, 240, 255, 0.7)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
             ≈ ${(amountNumber * 150).toFixed(2)} USD
-          </p>
+          </motion.p>
         )}
-      </div>
+      </motion.div>
 
       {/* Memo */}
-      <div className="mb-6">
+      <motion.div 
+        className="mb-8"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.3 }}
+      >
         <label 
-          className="block text-sm font-mono font-medium mb-2"
-          style={{ color: '#00f0ff' }}
+          className="block text-sm font-mono font-medium mb-3"
+          style={{ color: '#00f0ff', textShadow: '0 0 10px rgba(0, 240, 255, 0.3)' }}
         >
           Memo (optional)
         </label>
@@ -297,21 +321,25 @@ export const SendScreen: React.FC = () => {
           placeholder="Add a note"
           maxLength={256}
         />
-      </div>
+      </motion.div>
 
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Continue button */}
-      <RetroButton
-        variant="primary"
-        fullWidth
-        onClick={handleReview}
-        disabled={!canProceed}
-        rightIcon={<ArrowRight className="w-5 h-5" />}
+      {/* Continue button - Always visible at bottom */}
+      <motion.div 
+        className="mt-auto pt-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
       >
-        Review Transaction
-      </RetroButton>
+        <RetroButton
+          variant="primary"
+          fullWidth
+          onClick={handleReview}
+          disabled={!canProceed}
+          rightIcon={<ArrowRight className="w-5 h-5" />}
+        >
+          Review Transaction
+        </RetroButton>
+      </motion.div>
 
       {/* Contacts modal */}
       <RetroModal
@@ -548,7 +576,7 @@ export const SendScreen: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen flex flex-col pb-20"
+      className="h-screen flex flex-col"
       style={{
         background: 'linear-gradient(180deg, #0a0014 0%, #1a0030 50%, #0a0014 100%)',
       }}
@@ -569,7 +597,9 @@ export const SendScreen: React.FC = () => {
         showBack 
         onBack={step === 'form' ? undefined : () => setStep('form')}
       />
-      {renderStep()}
+      <div className="flex-1 overflow-hidden pb-20">
+        {renderStep()}
+      </div>
       {step === 'form' && <BottomNavigation />}
     </div>
   );
