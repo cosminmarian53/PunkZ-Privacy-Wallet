@@ -39,7 +39,7 @@ The wallet features a stunning landing page with neon effects, particle animatio
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/punkz-wallet.git
+git clone https://github.com/yourusername/PunkZ-Privacy-Wallet.git
 cd punkz-wallet
 ```
 
