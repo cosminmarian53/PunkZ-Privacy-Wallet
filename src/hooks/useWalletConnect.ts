@@ -76,10 +76,15 @@ export const useWalletConnect = (): UseWalletConnectReturn => {
     
     try {
       await walletConnectManager.approveSession(pendingProposal, publicKey);
+      // Small delay to ensure session is fully registered
+      await new Promise(resolve => setTimeout(resolve, 100));
       setSessions(walletConnectManager.getSessions());
-      setPendingProposal(null);
     } catch (err) {
+      console.error('[WalletConnect] Approve session error:', err);
       setError((err as Error).message);
+    } finally {
+      // Always clear the proposal, even on error
+      setPendingProposal(null);
     }
   }, [pendingProposal]);
 
@@ -89,9 +94,12 @@ export const useWalletConnect = (): UseWalletConnectReturn => {
     
     try {
       await walletConnectManager.rejectSession(pendingProposal);
-      setPendingProposal(null);
     } catch (err) {
+      console.error('[WalletConnect] Reject session error:', err);
       setError((err as Error).message);
+    } finally {
+      // Always clear the proposal, even on error
+      setPendingProposal(null);
     }
   }, [pendingProposal]);
 
@@ -105,9 +113,11 @@ export const useWalletConnect = (): UseWalletConnectReturn => {
         pendingRequest.id,
         result
       );
-      setPendingRequest(null);
     } catch (err) {
+      console.error('[WalletConnect] Approve request error:', err);
       setError((err as Error).message);
+    } finally {
+      setPendingRequest(null);
     }
   }, [pendingRequest]);
 
@@ -120,9 +130,11 @@ export const useWalletConnect = (): UseWalletConnectReturn => {
         pendingRequest.topic,
         pendingRequest.id
       );
-      setPendingRequest(null);
     } catch (err) {
+      console.error('[WalletConnect] Reject request error:', err);
       setError((err as Error).message);
+    } finally {
+      setPendingRequest(null);
     }
   }, [pendingRequest]);
 

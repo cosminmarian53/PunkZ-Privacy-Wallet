@@ -1,9 +1,8 @@
 import SignClient from '@walletconnect/sign-client';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 
-// WalletConnect Project ID - Get one at https://cloud.walletconnect.com
-// This is a demo project ID for development
-const PROJECT_ID = 'demo-project-id';
+// WalletConnect Project ID from environment variable
+const PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'ef86d17069657ef5591e653b8a3fb70a';
 
 export interface WalletConnectSession {
   topic: string;
@@ -252,18 +251,30 @@ class WalletConnectManager {
   }
 
   getSessions(): WalletConnectSession[] {
-    return Array.from(this.sessions.values()).map(session => ({
-      topic: session.topic,
-      peerMeta: {
-        name: session.peer.metadata.name,
-        description: session.peer.metadata.description,
-        url: session.peer.metadata.url,
-        icons: session.peer.metadata.icons,
-      },
-      chains: Object.values(session.namespaces).flatMap(ns => ns.chains || []),
-      accounts: Object.values(session.namespaces).flatMap(ns => ns.accounts),
-      expiry: session.expiry,
-    }));
+    // Sync sessions from the client to ensure we have the latest
+    if (this.client) {
+      const clientSessions = this.client.session.getAll();
+      clientSessions.forEach(session => {
+        if (!this.sessions.has(session.topic)) {
+          this.sessions.set(session.topic, session);
+        }
+      });
+    }
+    
+    return Array.from(this.sessions.values())
+      .filter(session => session.peer?.metadata) // Filter out sessions without peer metadata
+      .map(session => ({
+        topic: session.topic,
+        peerMeta: {
+          name: session.peer?.metadata?.name || 'Unknown dApp',
+          description: session.peer?.metadata?.description || '',
+          url: session.peer?.metadata?.url || '',
+          icons: session.peer?.metadata?.icons || [],
+        },
+        chains: Object.values(session.namespaces || {}).flatMap(ns => ns.chains || []),
+        accounts: Object.values(session.namespaces || {}).flatMap(ns => ns.accounts || []),
+        expiry: session.expiry,
+      }));
   }
 
   getSession(topic: string): SessionTypes.Struct | undefined {
