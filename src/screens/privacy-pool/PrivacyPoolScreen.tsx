@@ -86,6 +86,7 @@ const PrivacyPoolScreen = () => {
   const [txSignature, setTxSignature] = useState('');
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // ============================================================================
   // Pool Info Loading
@@ -208,8 +209,14 @@ const PrivacyPoolScreen = () => {
   };
 
   const handleDeleteNote = (noteId: string) => {
-    if (confirm('Are you sure you want to delete this note? You will lose access to the deposited funds.')) {
+    if (deleteConfirmId === noteId) {
       removeVaultNote(noteId);
+      setDeleteConfirmId(null);
+    } else {
+      setDeleteConfirmId(noteId);
+      setTimeout(() => {
+        setDeleteConfirmId((current) => current === noteId ? null : current);
+      }, 3000);
     }
   };
 
@@ -506,9 +513,17 @@ const PrivacyPoolScreen = () => {
                     )}
                     <button
                       onClick={() => handleDeleteNote(vn.id)}
-                      className="flex items-center justify-center p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-all"
+                      className={`flex items-center justify-center p-2 rounded-lg transition-all ${
+                        deleteConfirmId === vn.id 
+                          ? 'bg-red-500 text-white w-20' 
+                          : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                      }`}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      {deleteConfirmId === vn.id ? (
+                        <span className="text-xs font-bold">Confirm?</span>
+                      ) : (
+                        <Trash2 className="w-3.5 h-3.5" />
+                      )}
                     </button>
                   </div>
                 </div>

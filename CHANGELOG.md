@@ -4,11 +4,32 @@ A detailed log of project progress, features, and improvements.
 
 ---
 
+## [1.4.0] - 2026-02-28
+
+### 🛡️ On-Chain Groth16 ZK Privacy & User Profile (Major Updates)
+
+#### Added
+
+- **On-Chain Groth16 Privacy Verification**: Migrated from mock checks to fully functional Rust-based `punkzk-vault` on-chain verification.
+- **Devnet Privacy Pools**: Established deployed test instances on Solana Devnet for real end-to-end ZK deposits and withdrawals.
+- **User Profile System**: Built a dedicated `/profile` screen with personalized user data (Public Key, SOL Balance) and working navigation hooks.
+- **Secure Logout Mechanism**: Implemented a complete wallet disconnect/cache wipe function within the profile page.
+
+#### Fixed
+
+- **Commitment Note Deletion Bug**: Resolved invisible UI blocking by replacing native `window.confirm` dialogs with a fast, internal React state double-click confirmation.
+- **Vite Build Error**: Fixed CSS import ordering that was crashing Vite production builds.
+- **Global Typography Integrity**: Explicitly enforced `Rajdhani` font on isolated screens to prevent Tailwind resets.
+- **Navigation Consistency**: Corrected missing `BottomNavigation` mounting on edge routes.
+
+---
+
 ## [1.3.0] - 2026-01-09
 
 ### 🔗 WalletConnect v2 Integration (Major Feature)
 
 #### Added
+
 - **WalletConnect Sign Client** integration for dApp connectivity
   - Support for WalletConnect v2 protocol
   - QR code scanning and URI paste functionality
@@ -27,12 +48,14 @@ A detailed log of project progress, features, and improvements.
   - Testnet: `solana:4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z`
 
 #### Fixed
+
 - Network switching now properly refreshes balance for selected network
 - Balance and transactions clear immediately on network change
 - WalletConnect sessions now appear without requiring page refresh
 - Modal properly dismisses after approving/rejecting sessions
 
 #### Files Added
+
 - `src/lib/walletconnect/index.ts` - WalletConnect manager singleton
 - `src/hooks/useWalletConnect.ts` - React hook for WC state management
 - `src/screens/settings/WalletConnectScreen.tsx` - Connection management UI
@@ -45,6 +68,7 @@ A detailed log of project progress, features, and improvements.
 ### 🧪 Testing Infrastructure
 
 #### Added
+
 - **Vitest Testing Framework**
   - Configured with jsdom environment for React testing
   - Mock setup for browser APIs (crypto, localStorage)
@@ -62,6 +86,7 @@ A detailed log of project progress, features, and improvements.
     - Shared secret computation
 
 #### Files Added
+
 - `vitest.config.ts` - Test configuration
 - `src/test/setup.ts` - Test environment setup with mocks
 - `src/lib/zk/commitments.test.ts` - Pedersen commitment tests
@@ -74,6 +99,7 @@ A detailed log of project progress, features, and improvements.
 ### 📊 Transaction History Improvements
 
 #### Added
+
 - **Real Transaction Data**
   - Fetches actual transaction details from Solana RPC
   - Calculates real balance changes from pre/post balances
@@ -86,6 +112,7 @@ A detailed log of project progress, features, and improvements.
   - Direct link to Solana Explorer
 
 #### Fixed
+
 - Transaction amounts no longer show random values
 - Proper counterparty address detection
 - Accurate timestamp formatting
@@ -97,6 +124,7 @@ A detailed log of project progress, features, and improvements.
 ### 🔐 Zero-Knowledge Privacy Features (Major Feature)
 
 #### Added
+
 - **Pedersen Commitments**
   - Cryptographic balance hiding
   - Commitment generation with blinding factors
@@ -110,6 +138,7 @@ A detailed log of project progress, features, and improvements.
   - Stealth address management screen
 
 #### Files Added
+
 - `src/lib/zk/index.ts` - ZK module exports
 - `src/lib/zk/commitments.ts` - Pedersen commitment implementation
 - `src/lib/zk/stealth.ts` - Stealth address implementation
@@ -123,6 +152,7 @@ A detailed log of project progress, features, and improvements.
 ### 💼 Core Wallet Features
 
 #### Added
+
 - **Wallet Creation & Import**
   - BIP39 mnemonic generation (24 words)
   - HD wallet derivation (m/44'/501'/0'/0')
@@ -147,6 +177,7 @@ A detailed log of project progress, features, and improvements.
   - About screen
 
 #### UI/UX
+
 - Cyberpunk/Neon 80s aesthetic
 - Gradient backgrounds and neon glows
 - Responsive mobile-first design
@@ -160,6 +191,7 @@ A detailed log of project progress, features, and improvements.
 ### 🚀 Project Initialization
 
 #### Added
+
 - React 19 + TypeScript + Vite setup
 - Tailwind CSS v4 configuration
 - ESLint configuration
