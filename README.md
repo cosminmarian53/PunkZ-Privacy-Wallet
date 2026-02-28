@@ -271,16 +271,6 @@ const isValid = verifyCommitment(commitment, balance, secret);
 
 Stealth addresses enable recipients to receive payments to unique one-time addresses, preventing address linkability on the blockchain.
 
-### Privacy Considerations
-
-| Feature | Privacy Level | Trade-offs | Status |
-|---------|---------------|------------|--------|
-| On-Chain Pool | **High** | Requires on-chain program, fixed denominations | Alpha (Withdrawal proof is a dummy) |
-| Pedersen Commitments | High (off-chain) | Proofs are local only | Implemented |
-| Stealth Addresses | Medium-High | Requires sender cooperation | Implemented |
-
-> **Note**: For on-chain privacy enforcement, smart contract integration (like Punkz Vault) is required.
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
