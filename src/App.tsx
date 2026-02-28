@@ -9,6 +9,7 @@ import { LandingPage } from './screens/landing/LandingPage';
 import { OnboardingScreen, BackupScreen, RestoreScreen, RestoreSuccessScreen } from './screens/onboarding';
 
 import { PrivacyPoolScreen } from './screens/privacy-pool';
+import { UserProfileScreen } from './screens/profile';
 
 // Main screens
 import { HomeScreen } from './screens/home';
@@ -136,6 +137,14 @@ const AppLayout: React.FC = () => {
         element={
           <RequireWallet>
             <ScanScreen />
+          </RequireWallet>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <RequireWallet>
+            <UserProfileScreen />
           </RequireWallet>
         }
       />

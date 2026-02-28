@@ -1,11 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Send, ArrowDownToLine, Settings, History } from 'lucide-react';
+import { Home, Send, ArrowDownToLine, Settings, User } from 'lucide-react';
 
 const navItems = [
   { path: '/home', icon: Home, label: 'Home' },
   { path: '/receive', icon: ArrowDownToLine, label: 'Receive' },
   { path: '/send', icon: Send, label: 'Send', isMain: true },
-  { path: '/history', icon: History, label: 'Activity' },
+  { path: '/profile', icon: User, label: 'Profile' },
   { path: '/settings', icon: Settings, label: 'More' },
 ];
 
