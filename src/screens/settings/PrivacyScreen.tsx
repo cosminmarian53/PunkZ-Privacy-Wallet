@@ -253,7 +253,7 @@ export const PrivacyScreen: React.FC = () => {
         {/* Stealth Addresses Link */}
         <button
           onClick={() => navigate('/settings/stealth')}
-          className="w-full bg-gradient-to-r from-purple-900/30 to-fuchsia-900/30 border border-purple-500/30 rounded-2xl p-4 flex items-center justify-between hover:from-purple-900/40 hover:to-fuchsia-900/40 transition-all group"
+          className="w-full bg-gradient-to-r from-purple-900/30 to-fuchsia-900/30 border border-purple-500/30 rounded-2xl p-4 flex items-center justify-between hover:from-purple-900/40 hover:to-fuchsia-900/40 transition-all group mb-4"
         >
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
@@ -265,6 +265,26 @@ export const PrivacyScreen: React.FC = () => {
             </div>
           </div>
           <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-purple-400 transition-colors" />
+        </button>
+
+        {/* Privacy Pool (On-Chain) Link */}
+        <button
+          onClick={() => navigate('/privacy-pool')}
+          className="w-full bg-gradient-to-r from-cyan-900/30 to-emerald-900/30 border border-cyan-500/30 rounded-2xl p-4 flex items-center justify-between hover:from-cyan-900/40 hover:to-emerald-900/40 transition-all group"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-cyan-500/20 rounded-xl flex items-center justify-center neon-box-cyan">
+              <Zap className="w-5 h-5 text-cyan-400" />
+            </div>
+            <div className="text-left">
+              <p className="text-white font-medium">Privacy Pool</p>
+              <p className="text-slate-500 text-sm">On-chain ZK mixing with Groth16 proofs</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full">LIVE</span>
+            <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-cyan-400 transition-colors" />
+          </div>
         </button>
       </div>
     </div>

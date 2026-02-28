@@ -8,6 +8,8 @@ import { LandingPage } from './screens/landing/LandingPage';
 // Onboarding screens
 import { OnboardingScreen, BackupScreen, RestoreScreen, RestoreSuccessScreen } from './screens/onboarding';
 
+import { PrivacyPoolScreen } from './screens/privacy-pool';
+
 // Main screens
 import { HomeScreen } from './screens/home';
 import { ReceiveScreen } from './screens/receive';
@@ -134,6 +136,14 @@ const AppLayout: React.FC = () => {
         element={
           <RequireWallet>
             <ScanScreen />
+          </RequireWallet>
+        }
+      />
+      <Route
+        path="/privacy-pool"
+        element={
+          <RequireWallet>
+            <PrivacyPoolScreen />
           </RequireWallet>
         }
       />

@@ -13,7 +13,8 @@ import {
   EyeOff,
   TrendingUp,
   Copy,
-  Check
+  Check,
+  Zap
 } from 'lucide-react';
 
 export const HomeScreen = () => {
@@ -186,6 +187,32 @@ export const HomeScreen = () => {
             </div>
             <span className="text-xs font-medium text-slate-300 group-hover:text-amber-400 transition-colors">Scan</span>
           </button>
+        </div>
+
+        {/* ZK Privacy Feature Banner */}
+        <div 
+          onClick={() => navigate('/privacy-pool')}
+          className="bg-gradient-to-r from-fuchsia-900/40 via-purple-900/40 to-cyan-900/40 border border-fuchsia-500/30 rounded-2xl p-5 mb-8 neon-card cursor-pointer group relative overflow-hidden flex items-center justify-between"
+        >
+          {/* Animated Background Glow */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-fuchsia-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+          
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 bg-fuchsia-500/20 rounded-xl flex items-center justify-center neon-box-pink group-hover:scale-110 transition-transform">
+              <Zap className="w-6 h-6 text-fuchsia-400 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-bold text-white text-lg font-orbitron">ZK Privacy Pool</h3>
+                <span className="text-[10px] px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full font-bold uppercase tracking-wider">Live</span>
+              </div>
+              <p className="text-slate-400 text-sm">Mix SOL with Groth16 zero-knowledge proofs</p>
+            </div>
+          </div>
+          
+          <div className="w-10 h-10 rounded-full bg-slate-900/50 flex items-center justify-center group-hover:bg-fuchsia-500/20 transition-colors relative z-10">
+            <ArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-fuchsia-400 transition-colors" />
+          </div>
         </div>
 
         {/* Transactions */}

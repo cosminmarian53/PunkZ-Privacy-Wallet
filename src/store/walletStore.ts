@@ -18,6 +18,7 @@ import {
   type PrivacyState,
   initializePrivacyState 
 } from '../lib/zk';
+import type { VaultNote } from '../lib/zk-vault';
 
 // Browser-compatible ED25519 HD key derivation using Web Crypto API
 const HARDENED_OFFSET = 0x80000000;
@@ -119,6 +120,9 @@ export interface WalletState {
   privacy: PrivacyState;
   balanceCommitment: PedersenCommitment | null;
   
+  // Vault Notes
+  vaultNotes: VaultNote[];
+  
   // Actions
   createWallet: () => Promise<string>;
   importWallet: (mnemonic: string) => Promise<boolean>;
@@ -135,6 +139,11 @@ export interface WalletState {
   generateBalanceCommitment: () => PedersenCommitment | null;
   verifyBalanceCommitment: (commitment: string, balance: number, blindingFactor: string) => boolean;
   togglePrivacyMode: () => void;
+  
+  // Vault Note Actions
+  saveVaultNote: (note: VaultNote) => void;
+  removeVaultNote: (noteId: string) => void;
+  updateVaultNoteStatus: (noteId: string, status: VaultNote['status']) => void;
 }
 
 const RPC_ENDPOINTS = {
@@ -162,6 +171,9 @@ export const useWalletStore = create<WalletState>()(
       // ZK Privacy State
       privacy: initializePrivacyState(),
       balanceCommitment: null,
+      
+      // Vault Notes
+      vaultNotes: [],
 
       createWallet: async () => {
         set({ isLoading: true, error: null });
@@ -441,6 +453,27 @@ export const useWalletStore = create<WalletState>()(
           }
         }));
       },
+      
+      // Vault Note Actions
+      saveVaultNote: (note: VaultNote) => {
+        set((state) => ({
+          vaultNotes: [...state.vaultNotes, note],
+        }));
+      },
+      
+      removeVaultNote: (noteId: string) => {
+        set((state) => ({
+          vaultNotes: state.vaultNotes.filter((n) => n.id !== noteId),
+        }));
+      },
+      
+      updateVaultNoteStatus: (noteId: string, status: VaultNote['status']) => {
+        set((state) => ({
+          vaultNotes: state.vaultNotes.map((n) =>
+            n.id === noteId ? { ...n, status } : n
+          ),
+        }));
+      },
     }),
     {
       name: 'punkz-wallet-storage',
@@ -454,6 +487,7 @@ export const useWalletStore = create<WalletState>()(
         transactions: state.transactions,
         privacy: state.privacy,
         balanceCommitment: state.balanceCommitment,
+        vaultNotes: state.vaultNotes,
       }),
     }
   )

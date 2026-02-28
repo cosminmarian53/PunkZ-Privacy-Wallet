@@ -19,6 +19,7 @@
 
 - 🌈 **Stunning Retro/Neon UI** - Cyberpunk aesthetic with glowing effects and animations
 - 💜 **Solana Integration** - Full support for SOL and SPL tokens
+- ⚡️ **On-Chain Privacy Pool** - Deposit and withdraw SOL from a Tornado Cash-inspired privacy pool.
 - 🔐 **Secure HD Wallet** - BIP39 mnemonic with browser-native cryptography
 - 📱 **Responsive Design** - Works beautifully on desktop and mobile
 - 🚀 **Fast & Modern** - Built with React 19, Vite, and Tailwind CSS v4
@@ -32,28 +33,31 @@ The wallet features a stunning landing page with neon effects, particle animatio
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm (recommended) or npm
 
 ### Installation
 
 1. Clone the repository
+
 ```bash
 git clone https://github.com/yourusername/PunkZ-Privacy-Wallet.git
 cd punkz-wallet
 ```
 
-2. Install dependencies
+1. Install dependencies
+
 ```bash
 pnpm install
 ```
 
-3. Start the development server
+1. Start the development server
+
 ```bash
 pnpm dev
 ```
 
-4. Open [http://localhost:5173](http://localhost:5173) in your browser
+1. Open [http://localhost:5173](http://localhost:5173) in your browser
 
 ## 🧪 Testing with Solana Devnet
 
@@ -69,6 +73,7 @@ PunkZ Wallet is configured to use **Solana Devnet** by default for safe testing 
 ### Switching Networks
 
 Go to **Settings > Network** to switch between:
+
 - 🟢 **Mainnet** - Real transactions (use with caution)
 - 🟡 **Devnet** - Free test tokens (default)
 - 🔵 **Testnet** - Additional testing network
@@ -115,8 +120,8 @@ Go to **Settings > Network** to switch between:
 │  │   Zustand   │           │  WalletConnect │          │     ZK      │      │
 │  │   Store     │           │    Manager     │          │   Module    │      │
 │  │             │           │                │          │             │      │
-│  │ - Wallet    │           │ - Sessions     │          │ - Pedersen  │      │
-│  │ - Balance   │           │ - Sign Requests│          │ - Stealth   │      │
+│  │ - Wallet    │           │ - Sessions     │          │ - On-Chain  │      │
+│  │ - Balance   │           │ - Sign Requests│          │ - Client-Side│      │
 │  │ - Tx History│           │ - dApp Connect │          │ - Proofs    │      │
 │  └──────┬──────┘           └───────┬────────┘          └──────┬──────┘      │
 │         │                          │                          │             │
@@ -127,12 +132,14 @@ Go to **Settings > Network** to switch between:
 │                        │   (RPC Client)        │                            │
 │                        └───────────┬───────────┘                            │
 │                                    │                                         │
-└────────────────────────────────────┼────────────────────────────────────────┘
-                                     │
-                         ┌───────────▼───────────┐
-                         │   Solana Blockchain   │
-                         │   (Devnet/Mainnet)    │
-                         └───────────────────────┘
+│          ┌─────────────────────────┼────────────────────────┐                │
+│          │                         │                        │                │
+└──────────┼─────────────────────────┼────────────────────────┼───────────────┘
+           │                         │                        │
+┌──────────▼───────────┐ ┌───────────▼───────────┐ ┌──────────▼───────────┐
+│ Solana Blockchain    │ │ Solana Blockchain   │ │ Solana Blockchain    │
+│ (Devnet/Mainnet)     │ │ (Punkz Vault Program) │ │ (Other dApps)        │
+└──────────────────────┘ └───────────────────────┘ └──────────────────────┘
 ```
 
 ### Data Flow
@@ -164,58 +171,38 @@ Go to **Settings > Network** to switch between:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Transaction Flow
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    SEND TRANSACTION FLOW                         │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   User Input              Validation           Build Transaction │
-│  ┌─────────┐            ┌─────────────┐       ┌─────────────┐   │
-│  │ Address │───────────▶│ Valid Addr? │──────▶│ Create TX   │   │
-│  │ Amount  │            │ Balance OK? │       │ Instruction │   │
-│  └─────────┘            └─────────────┘       └──────┬──────┘   │
-│                                                       │          │
-│                                                       ▼          │
-│   Update UI               Confirm TX            Sign & Send     │
-│  ┌─────────┐            ┌─────────────┐       ┌─────────────┐   │
-│  │ Success │◀───────────│ Signature   │◀──────│ Keypair.sign│   │
-│  │ Screen  │            │ Confirmed   │       │ RPC Submit  │   │
-│  └─────────┘            └─────────────┘       └─────────────┘   │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
-
 ### ZK Privacy Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    ZK PRIVACY LAYER                              │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌───────────────────────┐     ┌───────────────────────────┐   │
-│  │  PEDERSEN COMMITMENTS │     │    STEALTH ADDRESSES      │   │
-│  ├───────────────────────┤     ├───────────────────────────┤   │
-│  │                       │     │                           │   │
-│  │  Balance ──┐          │     │  Meta-Address ──┐         │   │
-│  │            ▼          │     │                 ▼         │   │
-│  │  ┌─────────────────┐  │     │  ┌─────────────────────┐  │   │
-│  │  │ C = G^v × H^r   │  │     │  │ st:spend:view       │  │   │
-│  │  │                 │  │     │  │                     │  │   │
-│  │  │ v = balance     │  │     │  │ Sender generates:   │  │   │
-│  │  │ r = random      │  │     │  │ - Ephemeral key     │  │   │
-│  │  └────────┬────────┘  │     │  │ - One-time address  │  │   │
-│  │           │           │     │  └──────────┬──────────┘  │   │
-│  │           ▼           │     │             │             │   │
-│  │  ┌─────────────────┐  │     │             ▼             │   │
-│  │  │ Commitment Hash │  │     │  ┌─────────────────────┐  │   │
-│  │  │ (shareable)     │  │     │  │ Receiver scans      │  │   │
-│  │  └─────────────────┘  │     │  │ with viewing key    │  │   │
-│  │                       │     │  └─────────────────────┘  │   │
-│  └───────────────────────┘     └───────────────────────────┘   │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────┐
+│                              ZK PRIVACY LAYER                           │
+├───────────────────────────────────────────────────────────────────────────┤
+│                                                                           │
+│   ┌──────────────────────────┐                          ┌─────────────────┐ │
+│   │   Client-Side Privacy    │                          │ On-Chain Privacy│ │
+│   └──────────────────────────┘                          └─────────────────┘ │
+│                                                                           │
+│  ┌───────────────────────┐     ┌───────────────────┐    ┌─────────────────┐ │
+│  │  PEDERSEN COMMITMENTS │     │ STEALTH ADDRESSES │    │  PUNKZ VAULT    │ │
+│  ├───────────────────────┤     ├───────────────────┤    ├─────────────────┤ │
+│  │  - Hides balance      │     │ - Unlinkable addrs│    │ - Tornado-like  │ │
+│  │  - Off-chain proofs   │     │ - One-time keys   │    │ - ZK-SNARKs     │ │
+│  │  - Local verification │     │ - Scan with view key│    │ - Deposit/Withdraw│ │
+│  └───────────┬───────────┘     └─────────┬─────────┘    └────────┬────────┘ │
+│              │                           │                       │          │
+│              └───────────────┬───────────┘                       │          │
+│                              │                                   │          │
+│                              ▼                                   │          │
+│  ┌───────────────────────────────────────────────────────────┐   │          │
+│  │                       PunkZ Wallet UI                       │   │          │
+│  └───────────────────────────────────────────────────────────┘   │          │
+│                              │                                   │          │
+└──────────────────────────────┼───────────────────────────────────┼──────────┘
+                               │                                   │
+                     ┌─────────▼─────────┐               ┌─────────▼─────────┐
+                     │ Off-Chain Message │               │ Solana Transaction│
+                     │ Signing/Sharing   │               │ (to Punkz Vault)  │
+                     └───────────────────┘               └───────────────────┘
 ```
 
 ## 📁 Project Structure
@@ -224,72 +211,51 @@ Go to **Settings > Network** to switch between:
 punkz-wallet/
 ├── src/
 │   ├── components/       # Reusable UI components
-│   │   ├── navigation/   # TopAppBar, BottomNavigation
-│   │   ├── wallet/       # BalanceWidget, TransactionList
-│   │   └── ui/           # Button, Card, Input, Modal
 │   ├── screens/          # Page components
-│   │   ├── landing/      # Landing page
-│   │   ├── onboarding/   # Create/Import wallet
-│   │   ├── home/         # Main wallet view
-│   │   ├── send/         # Send SOL
-│   │   ├── receive/      # Receive with QR code
-│   │   ├── history/      # Transaction history (clickable)
+│   │   ├── ...
+│   │   ├── privacy-pool/ # On-chain privacy pool screen
+│   │   │   └── PrivacyPoolScreen.tsx
 │   │   └── settings/     # App settings + ZK + WalletConnect
 │   ├── lib/
-│   │   ├── zk/           # Zero-knowledge cryptography
-│   │   │   ├── commitments.ts      # Pedersen commitments
-│   │   │   ├── commitments.test.ts # Commitment tests
-│   │   │   ├── stealth.ts          # Stealth addresses
-│   │   │   ├── stealth.test.ts     # Stealth tests
-│   │   │   └── index.ts            # Module exports
-│   │   └── walletconnect/          # WalletConnect integration
-│   │       └── index.ts            # WC manager
-│   ├── hooks/            # Custom React hooks
-│   │   └── useWalletConnect.ts
+│   │   ├── zk/           # Client-side ZK primitives
+│   │   ├── zk-vault/     # Client for on-chain privacy pool
+│   │   └── ...
 │   ├── store/            # Zustand state management
-│   ├── test/             # Test setup
-│   └── assets/           # Images and icons
-├── public/               # Static assets
-├── vitest.config.ts      # Test configuration
-└── index.html            # Entry point
+│   └── ...
+└── ...
 ```
-
-## 🧪 Testing
-
-Run the test suite:
-
-```bash
-# Run tests in watch mode
-npm test
-
-# Run tests once
-npm run test:run
-
-# Run with coverage
-npm run test:coverage
-```
-
-### Test Coverage
-
-| Module | Tests |
-|--------|-------|
-| ZK Commitments | Commitment creation, verification, range proofs |
-| Stealth Addresses | Key generation, address derivation, payment scanning |
-
-## 🔐 Security
-
-- **No Private Keys on Servers** - All keys are generated and stored locally
-- **Browser-Native Crypto** - Uses Web Crypto API for HD key derivation
-- **Encrypted Storage** - Wallet data stored in browser's localStorage
-- **Open Source** - Full code transparency
-
-⚠️ **Important**: Always back up your recovery phrase! PunkZ Wallet cannot recover your funds without it.
 
 ## 🔮 ZK Privacy Features
 
-PunkZ Wallet implements client-side zero-knowledge privacy primitives to enhance transaction privacy without requiring smart contracts.
+PunkZ Wallet implements both client-side and on-chain privacy features.
 
-### Pedersen Commitments
+### On-Chain Privacy Pool (Punkz Vault)
+
+The wallet integrates with the **Punkz Vault**, a non-custodial on-chain privacy pool inspired by Tornado Cash. It allows you to deposit a fixed amount of SOL and withdraw it to a different address, breaking the link between the source and destination of funds.
+
+**Program ID (Devnet):** `5RnAtgkezoRF4WC4zVA2dPPGCxc91vBeMfAN3mbsobTn`
+
+**How it Works:**
+
+1. **Deposit:**
+    - The user generates a secret **note**. This note contains a nullifier and a secret.
+    - A commitment is created by hashing the note's contents.
+    - The user submits a transaction to deposit SOL into the vault, along with the commitment. The on-chain program stores this commitment in a Merkle tree.
+2. **Withdraw:**
+    - The user provides the secret note and a new recipient address.
+    - The wallet generates a **zk-SNARK proof** that proves the user possesses a secret to a commitment in the Merkle tree without revealing which one.
+    - The proof, along with the recipient address and a nullifier hash (to prevent double-spending), is sent to the vault program.
+    - If the proof is valid, the program transfers the SOL to the recipient address.
+
+> ⚠️ **CRITICAL:** You must back up your secret note. If you lose the note, you will **not** be able to withdraw your funds. They will be permanently lost.
+
+> ✅ **Implementation Status (Updated):** The application is now **fully functional end-to-end**! The client-side wallet integrates `snarkjs` and `poseidon-lite` to dynamically generate real Groth16 cryptographic proofs entirely in the browser. On the smart contract side, the Anchor program has been upgraded natively with Solana's `sol_poseidon` syscalls, providing true Zero-Knowledge execution with high compute efficiency. The **Groth16 on-chain verifier is completely implemented and passes verification** on localnet/devnet!
+
+### Client-Side Primitives
+
+PunkZ Wallet also implements client-side zero-knowledge privacy primitives to enhance transaction privacy without requiring smart contracts.
+
+#### Pedersen Commitments
 
 Pedersen Commitments allow you to create cryptographic proofs of balance ownership without revealing the actual amount.
 
@@ -301,98 +267,19 @@ const { commitment, secret } = createCommitment(balance);
 const isValid = verifyCommitment(commitment, balance, secret);
 ```
 
-**How it works:**
-1. **Commitment Phase**: A balance is hidden using `C = g^balance * h^secret`
-2. **Verification Phase**: The prover can later demonstrate knowledge of the balance without revealing it
-3. **Properties**: Binding (can't change the value) and Hiding (value is secret)
-
-### Stealth Addresses
+#### Stealth Addresses
 
 Stealth addresses enable recipients to receive payments to unique one-time addresses, preventing address linkability on the blockchain.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    STEALTH ADDRESS FLOW                      │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│   RECEIVER                          SENDER                   │
-│   ────────                          ──────                   │
-│                                                              │
-│   1. Generate stealth keys          2. Get receiver's        │
-│      (spending + viewing)              meta-address          │
-│            │                               │                 │
-│            ▼                               ▼                 │
-│   ┌─────────────────┐              ┌─────────────────┐      │
-│   │  Meta-Address   │──────────────│  Generate       │      │
-│   │  st:spend:view  │   Share      │  One-Time Addr  │      │
-│   └─────────────────┘              └─────────────────┘      │
-│                                            │                 │
-│                                            ▼                 │
-│                                    3. Send to stealth        │
-│                                       address + publish      │
-│                                       ephemeral pubkey       │
-│                                            │                 │
-│            ┌───────────────────────────────┘                 │
-│            ▼                                                 │
-│   4. Scan with viewing key                                   │
-│      to find payments                                        │
-│            │                                                 │
-│            ▼                                                 │
-│   5. Derive spending key                                     │
-│      to claim funds                                          │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Key Components:**
-- **Meta-Address**: `st:SpendingPubKey:ViewingPubKey` - Shared publicly to receive stealth payments
-- **One-Time Address**: Generated by sender, unique per transaction
-- **Ephemeral Key**: Published by sender for recipient to locate funds
-- **Viewing Key**: Allows scanning blockchain without spending ability
-
-### API Reference
-
-```typescript
-// Pedersen Commitments
-createCommitment(balance: number): { commitment: string; secret: string }
-verifyCommitment(commitment: string, balance: number, secret: string): boolean
-generateRangeProof(commitment: string, secret: string, balance: number): RangeProof
-verifyRangeProof(proof: RangeProof, commitment: string): boolean
-
-// Stealth Addresses
-generateStealthKeys(): StealthKeys
-generateStealthAddress(metaAddress: string): StealthAddress
-scanForStealthPayments(viewingKey: string, payments: StealthPayment[]): string[]
-deriveStealthSpendingKey(stealthAddress: string, spendingKey: string, ephemeralPubKey: string): string
-```
-
 ### Privacy Considerations
 
-| Feature | Privacy Level | Trade-offs |
-|---------|---------------|------------|
-| Pedersen Commitments | High (off-chain) | Proofs are local only |
-| Stealth Addresses | Medium-High | Requires sender cooperation |
+| Feature | Privacy Level | Trade-offs | Status |
+|---------|---------------|------------|--------|
+| On-Chain Pool | **High** | Requires on-chain program, fixed denominations | Alpha (Withdrawal proof is a dummy) |
+| Pedersen Commitments | High (off-chain) | Proofs are local only | Implemented |
+| Stealth Addresses | Medium-High | Requires sender cooperation | Implemented |
 
-> **Note**: These are client-side cryptographic primitives. For on-chain privacy enforcement, smart contract integration would be required.
-
-## 🎨 Design System
-
-### Colors
-
-| Color | Hex | Usage |
-|-------|-----|-------|
-| Neon Magenta | `#ff00ff` | Primary accents, CTAs |
-| Cyber Cyan | `#00f0ff` | Secondary accents |
-| Success Green | `#00ff88` | Success states |
-| Error Red | `#ff4444` | Error states |
-| Dark Purple | `#0a0014` | Background base |
-
-### Fonts
-
-- **Monoton** - Logo and hero text
-- **VT323** - Retro terminal feel
-- **Orbitron** - Futuristic headings
-- **Outfit** - Body text
+> **Note**: For on-chain privacy enforcement, smart contract integration (like Punkz Vault) is required.
 
 ## 🤝 Contributing
 
@@ -407,19 +294,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Inspired by the [Zashi Wallet](https://github.com/Electric-Coin-Company/zashi-android) architecture
-- Retro styling inspired by 80s cyberpunk aesthetics
-- Built for the Solana community with ♥
-
----
-
-<div align="center">
-
-**Made with ♥ by PunkZ Team**
-
-[⬆ Back to top](#-punkz-wallet)
-
-</div>

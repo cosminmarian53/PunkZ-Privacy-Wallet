@@ -230,12 +230,11 @@ export const LandingPage = () => {
                 <Shield className="w-7 h-7 text-cyan-400 group-hover:animate-pulse" />
               </div>
               <div className="flex items-center gap-2 mb-3">
-                <h3 className="text-2xl font-bold text-white group-hover:text-cyan-400 transition-colors">Zero-Knowledge Privacy</h3>
-                <span className="text-xs px-2 py-0.5 bg-cyan-500/20 text-cyan-400 rounded-full">ZK</span>
+                <h3 className="text-2xl font-bold text-white group-hover:text-cyan-400 transition-colors">ZK Privacy Pool</h3>
+                <span className="text-xs px-2 py-0.5 bg-cyan-500/20 text-cyan-400 rounded-full">LIVE</span>
               </div>
               <p className="text-slate-400 leading-relaxed">
-                Pedersen commitments let you prove properties about your balance without revealing 
-                the actual amount. Cryptographic privacy built right in.
+                Break the link between your source and destination addresses. Mix your SOL securely on-chain using advanced Groth16 zero-knowledge proofs.
               </p>
             </div>
 
@@ -353,6 +352,19 @@ export const LandingPage = () => {
                   <div>
                     <h4 className="text-white font-semibold mb-1">Verifiable Privacy</h4>
                     <p className="text-slate-500 text-sm">Others can verify your proofs without learning anything about your balance</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0 neon-box-cyan">
+                    <Database className="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold mb-1 flex items-center gap-2">
+                      On-Chain Privacy Pool
+                      <span className="text-[10px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded font-bold uppercase tracking-wider">New</span>
+                    </h4>
+                    <p className="text-slate-500 text-sm">Deposit SOL and withdraw to a fresh address using Groth16 zk-SNARKs to break the on-chain link</p>
                   </div>
                 </div>
               </div>
