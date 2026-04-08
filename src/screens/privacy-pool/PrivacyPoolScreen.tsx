@@ -20,9 +20,7 @@ import {
   FileText,
   Trash2,
   Check,
-  RefreshCw,
   Info,
-  Lock,
   Zap,
   ChevronDown,
 } from 'lucide-react';
@@ -63,8 +61,8 @@ const PrivacyPoolScreen = () => {
   const [activeTab, setActiveTab] = useState<Tab>('deposit');
 
   // Pool state
-  const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null);
-  const [isLoadingPool, setIsLoadingPool] = useState(false);
+  const [_poolInfo, setPoolInfo] = useState<PoolInfo | null>(null);
+  const [_isLoadingPool, setIsLoadingPool] = useState(false);
 
   // Deposit state
   const [note, setNote] = useState('');
