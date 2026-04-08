@@ -88,6 +88,16 @@ const PrivacyPoolScreen = () => {
   const [copied, setCopied] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
+  // Transaction confirmation modal (W009 — Solana Dev Skill safety guardrail)
+  const [pendingTx, setPendingTx] = useState<{
+    type: 'deposit' | 'withdraw';
+    amount: string;
+    feePayer: string;
+    recipient?: string;
+    poolAddress: string;
+    cluster: string;
+  } | null>(null);
+
   // ============================================================================
   // Pool Info Loading
   // ============================================================================
@@ -122,11 +132,26 @@ const PrivacyPoolScreen = () => {
     setTxSignature('');
   };
 
-  const handleDeposit = async () => {
+  // Show confirmation modal before deposit
+  const handleDepositRequest = () => {
     if (!commitment || !keypair || !instanceAddress) {
       setError('Please generate a note first, enter a pool address, and connect your wallet.');
       return;
     }
+    setError('');
+    setTxSignature('');
+    setPendingTx({
+      type: 'deposit',
+      amount: DENOMINATION_TIERS[selectedDenom].label,
+      feePayer: keypair.publicKey.toBase58(),
+      poolAddress: instanceAddress,
+      cluster: network,
+    });
+  };
+
+  const executeDeposit = async () => {
+    if (!commitment || !keypair || !instanceAddress) return;
+    setPendingTx(null);
     setIsLoading(true);
     setError('');
     setTxSignature('');
@@ -158,29 +183,47 @@ const PrivacyPoolScreen = () => {
     }
   };
 
-  const handleWithdraw = async () => {
+  // Show confirmation modal before withdrawal
+  const handleWithdrawRequest = () => {
     if (!withdrawNote || !recipient || !keypair) {
       setError('Please provide a note, recipient address, and connect your wallet.');
       return;
     }
+    const matchingNoteInfo = vaultNotes.find(n => n.note === withdrawNote);
+    let targetInstanceAddress = instanceAddress;
+    if (matchingNoteInfo && matchingNoteInfo.instanceAddress) {
+      targetInstanceAddress = matchingNoteInfo.instanceAddress;
+    }
+    if (!targetInstanceAddress) {
+      setError('Could not determine pool instance for this note.');
+      return;
+    }
+    setError('');
+    setTxSignature('');
+    setPendingTx({
+      type: 'withdraw',
+      amount: matchingNoteInfo ? `${matchingNoteInfo.denomination} SOL` : 'Unknown',
+      feePayer: keypair.publicKey.toBase58(),
+      recipient: recipient,
+      poolAddress: targetInstanceAddress,
+      cluster: network,
+    });
+  };
+
+  const executeWithdraw = async () => {
+    if (!withdrawNote || !recipient || !keypair) return;
+    const matchingNoteInfo = vaultNotes.find(n => n.note === withdrawNote);
+    let targetInstanceAddress = instanceAddress;
+    if (matchingNoteInfo && matchingNoteInfo.instanceAddress) {
+      targetInstanceAddress = matchingNoteInfo.instanceAddress;
+    }
+    if (!targetInstanceAddress) return;
+
+    setPendingTx(null);
     setIsLoading(true);
     setError('');
     setTxSignature('');
     try {
-      // Find the note to get its denomination/instance address
-      const matchingNoteInfo = vaultNotes.find(n => n.note === withdrawNote);
-      let targetInstanceAddress = instanceAddress;
-      
-      if (matchingNoteInfo && matchingNoteInfo.instanceAddress) {
-        targetInstanceAddress = matchingNoteInfo.instanceAddress;
-      }
-      
-      if (!targetInstanceAddress) {
-        setError('Could not determine pool instance for this note. Please make sure the note was generated on this network.');
-        setIsLoading(false);
-        return;
-      }
-
       const instancePubkey = new PublicKey(targetInstanceAddress);
       const recipientPubkey = new PublicKey(recipient);
       const signature = await withdraw(connection, keypair, instancePubkey, withdrawNote, recipientPubkey);
@@ -358,7 +401,7 @@ const PrivacyPoolScreen = () => {
 
                 {/* Step 2: Deposit */}
                 <button
-                  onClick={handleDeposit}
+                  onClick={handleDepositRequest}
                   disabled={isLoading || !commitment || !instanceAddress}
                   className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-cyan-500 text-white font-semibold hover:from-cyan-500 hover:to-cyan-400 transition-all shadow-lg shadow-cyan-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -421,7 +464,7 @@ const PrivacyPoolScreen = () => {
             </div>
 
             <button
-               onClick={handleWithdraw}
+               onClick={handleWithdrawRequest}
                disabled={isLoading || !withdrawNote || !recipient}
                className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold hover:from-emerald-500 hover:to-emerald-400 transition-all shadow-lg shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
              >
@@ -535,33 +578,127 @@ const PrivacyPoolScreen = () => {
         {/* ================================================================ */}
         {/* STATUS SECTION (shared across tabs) */}
         {/* ================================================================ */}
-        {(txSignature || error) && (
-          <div className="rounded-xl bg-slate-900/60 border border-slate-800/40 p-4">
-            {txSignature && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-emerald-400" />
-                  <span className="text-emerald-400 font-semibold">Transaction Successful!</span>
-                </div>
-                <a
-                  href={getExplorerUrl(txSignature)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-cyan-400 hover:text-cyan-300 text-sm break-all underline decoration-cyan-500/30 underline-offset-2"
-                >
-                  View on Solana Explorer →
-                </a>
-              </div>
-            )}
-            {error && (
-              <div className="flex items-start gap-2">
-                <AlertTriangle className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
-                <p className="text-red-400 text-sm break-all">{error}</p>
-              </div>
-            )}
+        {error && (
+          <div className="rounded-xl bg-red-900/30 border border-red-500/30 p-3">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-red-300 break-all">{error}</p>
+            </div>
+          </div>
+        )}
+        {txSignature && (
+          <div className="rounded-xl bg-emerald-900/20 border border-emerald-500/20 p-3 space-y-2">
+            <div className="flex items-center gap-2">
+              <Check className="w-5 h-5 text-emerald-400" />
+              <span className="text-emerald-400 font-semibold">Transaction Successful!</span>
+            </div>
+            <a
+              href={getExplorerUrl(txSignature)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 text-sm break-all underline decoration-cyan-500/30 underline-offset-2"
+            >
+              View on Solana Explorer →
+            </a>
           </div>
         )}
       </div>
+
+      {/* ================================================================ */}
+      {/* TRANSACTION CONFIRMATION MODAL (W009 Safety Guardrail) */}
+      {/* ================================================================ */}
+      {pendingTx && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden">
+            {/* Header */}
+            <div className={`px-5 py-4 border-b border-slate-800 ${
+              pendingTx.type === 'deposit'
+                ? 'bg-gradient-to-r from-cyan-900/40 to-cyan-800/20'
+                : 'bg-gradient-to-r from-emerald-900/40 to-emerald-800/20'
+            }`}>
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-xl ${
+                  pendingTx.type === 'deposit' ? 'bg-cyan-500/20' : 'bg-emerald-500/20'
+                }`}>
+                  <AlertTriangle className={`w-5 h-5 ${
+                    pendingTx.type === 'deposit' ? 'text-cyan-400' : 'text-emerald-400'
+                  }`} />
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-base">
+                    Confirm {pendingTx.type === 'deposit' ? 'Deposit' : 'Withdrawal'}
+                  </h3>
+                  <p className="text-slate-400 text-xs">Review transaction details before signing</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Transaction Details */}
+            <div className="px-5 py-4 space-y-3">
+              <div className="flex justify-between items-center py-2 border-b border-slate-800/60">
+                <span className="text-sm text-slate-400">Amount</span>
+                <span className="text-base font-bold text-white">{pendingTx.amount}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-slate-800/60">
+                <span className="text-sm text-slate-400">Cluster</span>
+                <span className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
+                  pendingTx.cluster === 'mainnet-beta'
+                    ? 'bg-red-500/20 text-red-300'
+                    : 'bg-fuchsia-500/20 text-fuchsia-300'
+                }`}>{pendingTx.cluster}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-slate-800/60">
+                <span className="text-sm text-slate-400">Fee Payer</span>
+                <span className="text-xs font-mono text-slate-300">
+                  {pendingTx.feePayer.slice(0, 4)}...{pendingTx.feePayer.slice(-4)}
+                </span>
+              </div>
+              {pendingTx.recipient && (
+                <div className="flex justify-between items-center py-2 border-b border-slate-800/60">
+                  <span className="text-sm text-slate-400">Recipient</span>
+                  <span className="text-xs font-mono text-emerald-300">
+                    {pendingTx.recipient.slice(0, 4)}...{pendingTx.recipient.slice(-4)}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between items-center py-2">
+                <span className="text-sm text-slate-400">Pool</span>
+                <span className="text-xs font-mono text-slate-300">
+                  {pendingTx.poolAddress.slice(0, 4)}...{pendingTx.poolAddress.slice(-4)}
+                </span>
+              </div>
+              {pendingTx.cluster === 'mainnet-beta' && (
+                <div className="flex items-start gap-2 p-3 bg-red-900/30 border border-red-500/30 rounded-xl">
+                  <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-red-300">
+                    <b>WARNING:</b> You are on MAINNET. Real funds will be transferred.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="px-5 pb-5 flex gap-3">
+              <button
+                onClick={() => setPendingTx(null)}
+                className="flex-1 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 text-sm font-semibold hover:bg-slate-700 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={pendingTx.type === 'deposit' ? executeDeposit : executeWithdraw}
+                className={`flex-1 py-3 rounded-xl text-white text-sm font-bold shadow-lg transition-all ${
+                  pendingTx.type === 'deposit'
+                    ? 'bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 shadow-cyan-500/25'
+                    : 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-emerald-500/25'
+                }`}
+              >
+                Approve & Sign
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNavigation />
     </div>
@@ -569,3 +706,4 @@ const PrivacyPoolScreen = () => {
 };
 
 export default PrivacyPoolScreen;
+
