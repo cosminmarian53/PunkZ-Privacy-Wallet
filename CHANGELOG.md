@@ -4,6 +4,35 @@ A detailed log of project progress, features, and improvements.
 
 ---
 
+## [1.5.0] - 2026-04-09
+
+### 🔒 Security Hardening & Comparative Audit
+
+#### Added
+
+- **Transaction Confirmation Modal (W009)**: Before any deposit or withdrawal, the user is now shown a detailed confirmation popup displaying: amount, cluster (devnet/mainnet), fee payer address, recipient address, and pool address. Users must explicitly click "Approve & Sign" to proceed. Implements the Solana Dev Skill W009 safety guardrail.
+- **Mainnet Warning**: When operating on `mainnet-beta`, a prominent red warning is displayed in the confirmation modal.
+
+#### Security (On-Chain Program — `punkzk-vault`)
+
+- **Recipient Validation (Front-Running Prevention)**: Added explicit defense-in-depth check that the recipient account in the transaction matches the recipient encoded in the ZK proof's public inputs (`RecipientMismatch` error).
+- **Vault Solvency Check**: Program now verifies sufficient lamports exist before processing withdrawal (`InsufficientVaultBalance` error).
+- **Nullifier Capacity Guard**: Introduced `MAX_NULLIFIERS = 32` constant to prevent unbounded account growth and runtime panics (`NullifierSetFull` error).
+- **Structured Event Emission**: Added Anchor `#[event]` types: `DepositEvent` (commitment, leaf_index, timestamp) and `WithdrawEvent` (nullifier_hash, recipient, timestamp) for indexer/frontend consumption.
+- **Checked Arithmetic**: All arithmetic operations (`+=`, `-`, `.pow()`) replaced with `checked_add`, `checked_sub`, `checked_pow` to prevent overflow (`ArithmeticOverflow` error).
+
+#### Documentation
+
+- **Security Audit Report**: Full audit report (`audit-report.md`) evaluating all 16 Solana Foundation Security Checklist categories.
+- **Comparative Analysis**: Side-by-side comparison with the Solana Foundation `05-private-transfers` reference implementation.
+- **Vault README Updated**: Added Security Hardening section documenting all improvements.
+
+#### Deployed
+
+- **Program redeployed to Devnet**: `5RnAtgkezoRF4WC4zVA2dPPGCxc91vBeMfAN3mbsobTn` (post-hardening build)
+
+---
+
 ## [1.4.0] - 2026-02-28
 
 ### 🛡️ On-Chain Groth16 ZK Privacy & User Profile (Major Updates)
